@@ -1,48 +1,72 @@
 import React, { useState } from 'react';
 import StyledConverter from './Converter.styled';
+import {IValue} from "../../App";
 
 interface IConverterProps{
-    firstSelectValue1: string;
-    firstSelectValue2: string;
-    firstSelectValue3: string;
+    SelectValues: IValue[]
 
-    secondSelectValue1: string;
-    secondSelectValue2: string;
-    secondSelectValue3: string;
 }
 
-export default function Converter() {
+export default function Converter({SelectValues}: IConverterProps) {
     const [valueLeft, setValueLeft] = useState('');
     const [valueRight, setValueRight] = useState('');
+    const [coefLeft, setCoefLeft] = useState(1);
+    const [coefRight, setCoefRight] = useState(1);
 
-    function handleChangeLeft(event: React.ChangeEvent<HTMLInputElement>){
+    function handleInputChangeLeft(event: React.ChangeEvent<HTMLInputElement>){
         setValueRight(event.target.value);
+        setValueLeft( String(Number(event.target.value) * coefLeft));
+    }
+
+    function handleInputChangeRight(event: React.ChangeEvent<HTMLInputElement>){
+        setValueRight( String(Number(event.target.value) * coefRight));
         setValueLeft(event.target.value)
     }
 
-    function handleChangeRight(event: React.ChangeEvent<HTMLInputElement>){
-        setValueRight(event.target.value);
-        setValueLeft(event.target.value)
+    function handleSelectChangeLeft(event: React.ChangeEvent<HTMLSelectElement>){
+        setCoefLeft(Number(event.target.value));
+        console.log('Select value', event.target.value)
     }
 
+    function handleSelectChangeRight(event: React.ChangeEvent<HTMLSelectElement>){
+        setCoefRight(Number(event.target.value));
+        console.log('Select value', event.target.value)
+    }
+    
     return (
         <StyledConverter>
             <p>Converter</p>
             <div className="converter__container">
-                <input type="number" placeholder="Input your value here" value={valueLeft} onChange={handleChangeRight}/>
-                <select name="FirstSelect" id="">
-                    <option value="">metres</option>
-                    <option value="">yards</option>
-                    <option value="">miles</option>
+                <input type="number" placeholder="Input your value here" value={valueLeft} onChange={handleInputChangeRight}/>
+                <select name="FirstSelect" id="" onChange={handleSelectChangeLeft}>
+                    {
+                        SelectValues.map(({id, name, coef}) => (
+                            <option
+                                key={id}
+                                value={coef}
+                            >
+                                {name}
+                            </option>
+                        ))
+                    }
                 </select>
                 <div>=</div>
-                <input type="number" placeholder="Input your value here" value={valueRight} onChange={handleChangeLeft}/>
-                <select name="SecondSelect" id="">
-                    <option value="">metres</option>
-                    <option value="">yards</option>
-                    <option value="">miles</option>
+                <input type="number" placeholder="Input your value here" value={valueRight} onChange={handleInputChangeLeft}/>
+                <select name="SecondSelect" id="" onChange={handleSelectChangeRight}>
+                    {
+                        SelectValues.map(({id, name, coef}) => (
+                            <option
+                                key={id}
+                                value={coef}
+                            >
+                                {name}
+                            </option>
+                        ))
+                    }
                 </select>
             </div>
+            <p>COEF_LEFT: {coefLeft}</p>
+            <p>COEF_RIGHT: {coefRight}</p>
         </StyledConverter>
     );
 }
